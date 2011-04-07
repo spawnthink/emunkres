@@ -2,41 +2,10 @@
 %%% This module implements the Munkres assignment algorithm (Hungarian Algorithm)
 %%%
 %%% @author Ahmed Omar <spawn.think@gmail.com>
--module(munkres).
+-module(emunkres).
 %%% @end
 -export([step/2]).
--define(Mat,matrices).
--define(test_a,[{{0,0},1},
-                {{0,1},2},
-                {{0,2},3},
-                {{1,0},2},
-                {{1,1},4},
-                {{1,2},6},
-                {{2,0},3},
-                {{2,1},6},
-                {{2,2},9}]).
-
--define(test_b,[{{0,0},14},
-                {{0,1},5},
-                {{0,2},8},
-                {{0,3},7},
-                {{1,0},2},
-                {{1,1},12},
-                {{1,2},6},
-                {{1,3},5},
-                {{2,0},7},
-                {{2,1},8},
-                {{2,2},3},
-                {{2,3},9},
-                {{3,0},2},
-                {{3,1},4},
-                {{3,2},6},
-                {{3,3},10}
-               ]).
--record(mats,{cost,star,
-              crow,ccol,
-              path,path_rc,n}).
--define(S,St#mats).
+-include("matrices.hrl").
 
 step(0,[test])->
     M=?Mat:new(),
@@ -138,24 +107,8 @@ step_5(St,Count)->
                         {{Count+1,0},X}),
             ?Mat:update(?S.path,
                         {{Count+1,1},V}),
-            step_5(St,check_prime(St,Count+1))
+            step_5(St,?Mat:check_prime(St,Count+1))
     end.
 
-check_prime(St,Count)->
-    {_,Row}= ?Mat:lookup(?S.path,{Count,0}),
-    case ?Mat:prime_in_row(?S.star,
-                           Row,
-                           ?S.n) of
-        false->
-            Count;
-        Y ->
-            {_,V}=?Mat:lookup(?S.path,
-                              {Count,0}),
-            ?Mat:update(?S.path,
-                        {{Count+1,0},V}),
-            ?Mat:update(?S.path,
-                        {{Count+1,1},Y}),
-            Count+1
-    end.
 
 

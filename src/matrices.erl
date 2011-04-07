@@ -4,7 +4,6 @@
 %%% @author Ahmed Omar <spawn.think@gmail.com>
 -module(matrices).
 %%% @end
--define(DEFAULT, mat).
 -export([new/0,new/1,
          delete/0,delete/1,
          from_list/2,to_list/1,
@@ -12,12 +11,12 @@
 -export([get_size/1,min/1,max/1,min_uncov/3]).
 -export([is_covered/2,covered_cols/2,
          zero_in_rows/4,star_in_col/3,
-         star_in_row/3,prime_in_row/3]).
+         star_in_row/3,prime_in_row/3, check_prime/2]).
 -export([cover/2,uncover/2,uncover_all/1,
          prime/2,erase_prime/2,erase_primes/1,
          convert_path/3,star_zeros/5,
          sub_min/2]).
-
+-include("matrices.hrl").
 
 new()->
     new(?DEFAULT).
@@ -294,3 +293,20 @@ star_zeros(M,N, StarMat, CRow, CCol)->
                       Acc
               end,
     fold_rows(M,N,CountFun,0).
+
+check_prime(St,Count)->
+    {_,Row}= ?Mat:lookup(?S.path,{Count,0}),
+    case ?Mat:prime_in_row(?S.star,
+                           Row,
+                           ?S.n) of
+        false->
+            Count;
+        Y ->
+            {_,V}=?Mat:lookup(?S.path,
+                              {Count,0}),
+            ?Mat:update(?S.path,
+                        {{Count+1,0},V}),
+            ?Mat:update(?S.path,
+                        {{Count+1,1},Y}),
+            Count+1
+    end.
